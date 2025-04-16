@@ -1,6 +1,7 @@
 // Import statements stay the same
 import 'dart:ui';
 import 'package:final_year/View/QR_CODE.dart';
+import 'package:final_year/View/singup_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:final_year/Controller/login_controller.dart';
@@ -131,7 +132,7 @@ class LoginView extends GetView<LoginController> {
                               child: const Text("Login"),
                             ),
                             TextButton(
-                              onPressed: () => Get.to(QRCodeScanner()),
+                              onPressed: () => Get.to(SignupView()),
                               child: const Text(
                                 "Don't have an account? Sign up",
                                 style: TextStyle(color: Colors.greenAccent),

@@ -138,6 +138,33 @@ class SignupView extends GetView<SignupController> {
                                   ),
                                 )),
                             const SizedBox(height: 20),
+                            Obx(() => TextField(
+                                  onChanged: (val) =>
+                                      controller.confirmPassword.value = val,
+                                  obscureText:
+                                      controller.isPasswordHidden.value,
+                                  style: const TextStyle(color: Colors.white),
+                                  decoration: InputDecoration(
+                                    hintText: ' Confirm Password',
+                                    hintStyle: const TextStyle(
+                                        color: Colors.greenAccent),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        controller.isPasswordHidden.value
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: Colors.greenAccent,
+                                      ),
+                                      onPressed:
+                                          controller.togglePasswordVisibility,
+                                    ),
+                                    enabledBorder: const UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.greenAccent),
+                                    ),
+                                  ),
+                                )),
+                            const SizedBox(height: 20),
 
                             // Sign Up button
                             ElevatedButton(

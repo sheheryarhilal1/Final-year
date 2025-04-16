@@ -1,4 +1,6 @@
 import 'package:final_year/View/QR_CODE.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {
@@ -11,14 +13,23 @@ class LoginController extends GetxController {
   }
 
   void login() async {
-    // You can replace this with real login logic
-    Get.snackbar("Login", "Logged in as ${email.value}");
-    Future.delayed(const Duration(seconds: 500000));
-    await Get.to(() => QRCodeScanner());
-  }
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email.value.trim(),
+        password: password.value.trim(),
+      );
 
-  void goToSignUp() {
-    Get.snackbar("Sign Up", "Navigate to Sign Up screen");
-    // Navigate to SignUpView here (if created)
+      await Future.delayed(
+          const Duration(milliseconds: 800)); // Optional delay for UX
+      Get.to(() => QRCodeScanner());
+
+      Get.snackbar("Success", "Logged in successfully!",
+          snackPosition: SnackPosition.BOTTOM);
+    } catch (e) {
+      Get.snackbar("Login Failed", e.toString(),
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white);
+    }
   }
 }
