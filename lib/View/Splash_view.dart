@@ -18,17 +18,17 @@ class SplashView extends GetView<SplashController> {
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.greenAccent.shade400,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  "Personal AI Buddy",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                // decoration: BoxDecoration(
+                //   color: Colors.greenAccent.shade400,
+                //   borderRadius: BorderRadius.circular(20),
+                // ),
+                // child: const Text(
+                //   "Personal AI Buddy",
+                //   style: TextStyle(
+                //     color: Colors.black,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
               ),
 
               const SizedBox(height: 40),
@@ -51,7 +51,7 @@ class SplashView extends GetView<SplashController> {
               const SizedBox(height: 30),
               const Text(
                 "BIOSYNC\n"
-                "How may I help\nyou today!",
+                "How may I help you!",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Color(0xFFADFF2F),
@@ -62,7 +62,6 @@ class SplashView extends GetView<SplashController> {
 
               const SizedBox(height: 50),
 
-              // 🚀 Get Started button
               ElevatedButton(
                 onPressed: () {
                   Get.snackbar(
@@ -71,7 +70,7 @@ class SplashView extends GetView<SplashController> {
                     snackPosition: SnackPosition.TOP,
                     backgroundColor: const Color(0xFFADFF2F),
                     colorText: Colors.black,
-                    duration: const Duration(seconds: 1),
+                    duration: const Duration(milliseconds: 1000),
                   );
 
                   Future.delayed(const Duration(milliseconds: 100), () {

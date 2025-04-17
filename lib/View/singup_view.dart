@@ -1,7 +1,7 @@
 import 'package:final_year/Controller/singup_controler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:ui'; // Import for BackdropFilter
+import 'dart:ui'; 
 
 class SignupView extends GetView<SignupController> {
   final SignupController controller = Get.put(SignupController());
@@ -31,8 +31,7 @@ class SignupView extends GetView<SignupController> {
                 ),
 
                 const SizedBox(height: 20),
-
-                // BIOSYNC text after image
+                
                 const Text(
                   "BIOSYNC",
                   style: TextStyle(
@@ -45,7 +44,6 @@ class SignupView extends GetView<SignupController> {
 
                 const SizedBox(height: 40),
 
-                // Glassy Rounded Rectangle with Thick Border
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
@@ -78,8 +76,7 @@ class SignupView extends GetView<SignupController> {
                               ),
                             ),
                             const SizedBox(height: 30),
-
-                            // Email input field
+                          
                             TextField(
                               onChanged: (val) => controller.email.value = val,
                               style: const TextStyle(color: Colors.white),
@@ -93,8 +90,7 @@ class SignupView extends GetView<SignupController> {
                               ),
                             ),
                             const SizedBox(height: 20),
-
-                            // Username input field
+                          
                             TextField(
                               onChanged: (val) =>
                                   controller.username.value = val,
@@ -109,8 +105,7 @@ class SignupView extends GetView<SignupController> {
                               ),
                             ),
                             const SizedBox(height: 20),
-
-                            // Password input field
+                          
                             Obx(() => TextField(
                                   onChanged: (val) =>
                                       controller.password.value = val,
@@ -165,8 +160,7 @@ class SignupView extends GetView<SignupController> {
                                   ),
                                 )),
                             const SizedBox(height: 20),
-
-                            // Sign Up button
+                            
                             ElevatedButton(
                               onPressed: controller.signup,
                               style: ElevatedButton.styleFrom(
@@ -178,8 +172,7 @@ class SignupView extends GetView<SignupController> {
                               ),
                               child: const Text("Sign Up"),
                             ),
-
-                            // Login redirection link
+                            
                             TextButton(
                               onPressed: () => Get.toNamed('/login'),
                               child: const Text(

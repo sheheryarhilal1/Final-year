@@ -1,3 +1,4 @@
+
 import 'dart:developer';
 import 'package:final_year/Model/User_device_model.dart';
 import 'package:final_year/service/shared_preference.dart';
@@ -207,7 +208,7 @@ bool showIndicator = true; // Indicator initially dikhayega
         return AlertDialog(
           backgroundColor: Colors.grey.withOpacity(0.3), // Dark background
           title: Text(
-            'Connect Damper to Wi-Fi',
+            'Response the time',
             style: TextStyle(color: Colors.white), // White text
           ),
           content: SingleChildScrollView(
@@ -221,7 +222,7 @@ bool showIndicator = true; // Indicator initially dikhayega
                       borderSide:
                           BorderSide(color: Colors.green), // Green focus
                     ),
-                    labelText: 'Connection Name',
+                    labelText: 'Teacher ID',
                     labelStyle:
                         TextStyle(color: Colors.white), // White label text
                   ),
@@ -277,7 +278,7 @@ Future<void> _showdevicenameDialog(String ssid, String password) async {
           return AlertDialog(
             backgroundColor:Colors.grey.withOpacity(0.3) ,
             title: Text(
-              'Enter Your Device Name',
+              'Teacher Name',
               style: TextStyle(
                 color: Colors.white  // ✅ Dynamic text color
               ),
@@ -295,7 +296,7 @@ Future<void> _showdevicenameDialog(String ssid, String password) async {
                           color: Colors.tealAccent ,
                         ),
                       ),
-                      labelText: 'Device Name',
+                      labelText: 'Teacher Name',
                       labelStyle: TextStyle(color: Colors.white),
                     ),
                     cursorColor: Colors.tealAccent ,
@@ -366,7 +367,6 @@ Future<void> _showdevicenameDialog(String ssid, String password) async {
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     
-
     return Scaffold(
   backgroundColor: Colors.black,
   appBar: AppBar(

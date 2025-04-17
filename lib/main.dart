@@ -6,15 +6,11 @@ import 'Controller/Splash_controler.dart';
 import 'Controller/login_controller.dart';
 import 'View/splash_view.dart';
 import 'View/login_view.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // 🔥 Firebase Init
-
-  // Register Controllers lazily
+  await Firebase.initializeApp(); 
   Get.lazyPut<LoginController>(() => LoginController());
   Get.lazyPut<SignupController>(() => SignupController());
-
   runApp(GetMaterialApp(
     debugShowCheckedModeBanner: false,
     initialRoute: '/splash',

@@ -1,6 +1,5 @@
 // Import statements stay the same
 import 'dart:ui';
-import 'package:final_year/View/QR_CODE.dart';
 import 'package:final_year/View/singup_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,7 +16,7 @@ class LoginView extends GetView<LoginController> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 👽 Robot Icon
+              
                 Container(
                   height: 120,
                   width: 120,
@@ -31,8 +30,7 @@ class LoginView extends GetView<LoginController> {
                   child:
                       const Icon(Icons.android, size: 80, color: Colors.black),
                 ),
-
-                // 🌟 Text under Image
+              
                 const SizedBox(height: 15),
                 const Text(
                   "Welcome to BIOSYNC",
@@ -45,8 +43,7 @@ class LoginView extends GetView<LoginController> {
                 ),
 
                 const SizedBox(height: 30),
-
-                // 🌟 Glassy Card with Glowing Green Border
+              
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
