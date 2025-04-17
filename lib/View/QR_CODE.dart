@@ -338,7 +338,7 @@ Future<void> _showdevicenameDialog(String ssid, String password) async {
                     isDialogLoading = false;
                   });
 
-                  // Get.offAll(() => NavBar());
+                  //  Get.offAll(() => NavBar());
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor:  Colors.tealAccent,
