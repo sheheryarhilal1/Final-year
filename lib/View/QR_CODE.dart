@@ -214,7 +214,7 @@ class _QRCodeScannerState extends State<QRCodeScanner>
               Colors.grey.withValues(alpha: 0.3), // Dark background
           title: Text(
             'Teacher Schedule  time',
-            style: TextStyle(color: Colors.white), // White text
+            style: TextStyle(color: Color(0xFFADFF2F)), // White text
           ),
           content: SingleChildScrollView(
             child: Column(
@@ -225,25 +225,27 @@ class _QRCodeScannerState extends State<QRCodeScanner>
                   decoration: InputDecoration(
                     focusedBorder: UnderlineInputBorder(
                       borderSide:
-                          BorderSide(color: Colors.green), // Green focus
+                          BorderSide(color: Color(0xFFADFF2F)), // Green focus
                     ),
                     labelText: 'Teacher Name',
                     labelStyle:
-                        TextStyle(color: Colors.white), // White label text
+                        TextStyle(color: Color(0xFFADFF2F)), // White label text
                   ),
-                  style: TextStyle(color: Colors.white), // White input text
+                  style:
+                      TextStyle(color: Color(0xFFADFF2F)), // White input text
                   cursorColor: Colors.white,
                 ),
                 TextField(
                   controller: passwordController,
                   decoration: InputDecoration(
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.green),
+                      borderSide: BorderSide(color: Color(0xFFADFF2F)),
                     ),
                     labelText: 'Tecaher Id Passsword',
-                    labelStyle: TextStyle(color: Colors.white),
+                    labelStyle: TextStyle(color: Color(0xFFADFF2F)),
                   ),
-                  style: TextStyle(color: Colors.white), // White input text
+                  style:
+                      TextStyle(color: Color(0xFFADFF2F)), // White input text
                   cursorColor: Colors.white,
                   obscureText: true,
                 ),
@@ -284,24 +286,52 @@ class _QRCodeScannerState extends State<QRCodeScanner>
               backgroundColor: Colors.grey.withValues(alpha: 0.3),
               title: Text(
                 'Enter time of teacher',
-                style: TextStyle(color: Colors.white // ✅ Dynamic text color
-                    ),
+                style:
+                    TextStyle(color: Color(0xFFADFF2F) // ✅ Dynamic text color
+                        ),
               ),
               content: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    //  TextEditingController nameController = TextEditingController();
+
+                    // TextEditingController nameController = TextEditingController();
+
                     TextField(
                       controller: nameController,
-                      style: TextStyle(color: Colors.white),
+                      readOnly: true, // Disable typing
+                      style: TextStyle(color: Color(0xFFADFF2F)),
                       decoration: InputDecoration(
+                        suffixIcon: GestureDetector(
+                          onTap: () async {
+                            TimeOfDay? pickedTime = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),
+                            );
+
+                            if (pickedTime != null) {
+                              final now = DateTime.now();
+                              final dt = DateTime(now.year, now.month, now.day,
+                                  pickedTime.hour, pickedTime.minute);
+                              final timeString =
+                                  TimeOfDay.fromDateTime(dt).format(context);
+
+                              nameController.text = timeString;
+                            }
+                          },
+                          child: Icon(
+                            Icons.access_time,
+                            color: Color(0xFFADFF2F),
+                          ),
+                        ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
                             color: Colors.tealAccent,
                           ),
                         ),
                         labelText: 'Time Required',
-                        labelStyle: TextStyle(color: Colors.white),
+                        labelStyle: TextStyle(color: Color(0xFFADFF2F)),
                       ),
                       cursorColor: Colors.tealAccent,
                     ),
