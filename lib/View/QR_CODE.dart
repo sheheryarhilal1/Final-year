@@ -213,7 +213,7 @@ class _QRCodeScannerState extends State<QRCodeScanner>
           backgroundColor:
               Colors.grey.withValues(alpha: 0.3), // Dark background
           title: Text(
-            'Connect Damper to Wi-Fi',
+            'Teacher Schedule  time',
             style: TextStyle(color: Colors.white), // White text
           ),
           content: SingleChildScrollView(
@@ -227,7 +227,7 @@ class _QRCodeScannerState extends State<QRCodeScanner>
                       borderSide:
                           BorderSide(color: Colors.green), // Green focus
                     ),
-                    labelText: 'Connection Name',
+                    labelText: 'Teacher Name',
                     labelStyle:
                         TextStyle(color: Colors.white), // White label text
                   ),
@@ -240,7 +240,7 @@ class _QRCodeScannerState extends State<QRCodeScanner>
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.green),
                     ),
-                    labelText: 'Password',
+                    labelText: 'Tecaher Id Passsword',
                     labelStyle: TextStyle(color: Colors.white),
                   ),
                   style: TextStyle(color: Colors.white), // White input text
@@ -283,7 +283,7 @@ class _QRCodeScannerState extends State<QRCodeScanner>
             return AlertDialog(
               backgroundColor: Colors.grey.withValues(alpha: 0.3),
               title: Text(
-                'Enter Your Device Name',
+                'Enter time of teacher',
                 style: TextStyle(color: Colors.white // ✅ Dynamic text color
                     ),
               ),
@@ -300,7 +300,7 @@ class _QRCodeScannerState extends State<QRCodeScanner>
                             color: Colors.tealAccent,
                           ),
                         ),
-                        labelText: 'Device Name',
+                        labelText: 'Time Required',
                         labelStyle: TextStyle(color: Colors.white),
                       ),
                       cursorColor: Colors.tealAccent,
