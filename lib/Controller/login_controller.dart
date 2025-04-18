@@ -1,3 +1,4 @@
+import 'package:final_year/View/NAV_BAR/Nav_bar.dart';
 import 'package:final_year/View/QR_CODE.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,15 +22,15 @@ class LoginController extends GetxController {
 
       await Future.delayed(
           const Duration(milliseconds: 800)); // Optional delay for UX
-      Get.to(() => QRCodeScanner());
+      Get.to(() => NavBar                                                       ());
 
       Get.snackbar("Success", "Logged in successfully!",
           snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
       Get.snackbar("Login Failed", e.toString(),
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white);
+          snackPosition: SnackPosition.TOP,
+          // backgroundColor: Colors.redAccent,
+          colorText: Colors.greenAccent);
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -33,7 +34,10 @@ class SignupController extends GetxController {
       Get.snackbar("Success", "Account created for ${email.value}");
       Get.offNamed('/login'); // or wherever you want to take them after signup
     } catch (e) {
-      Get.snackbar("Sign Up Failed", e.toString());
+      Get.snackbar("Sign Up Failed", e.toString(),
+          snackPosition: SnackPosition.TOP,
+          // backgroundColor: Colors.redAccent,
+          colorText: Colors.greenAccent);
     }
   }
 

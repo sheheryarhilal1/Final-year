@@ -68,7 +68,7 @@ class SplashView extends GetView<SplashController> {
                     "Login",
                     "Redirecting to login screen...",
                     snackPosition: SnackPosition.TOP,
-                    backgroundColor: const Color(0xFFADFF2F),
+                    // backgroundColor: ,
                     colorText: Colors.black,
                     duration: const Duration(milliseconds: 1000),
                   );

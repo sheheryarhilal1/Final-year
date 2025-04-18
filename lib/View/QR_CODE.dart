@@ -1,16 +1,16 @@
-
 import 'dart:developer';
 import 'package:final_year/Model/User_device_model.dart';
+import 'package:final_year/View/NAV_BAR/Nav_bar.dart';
 import 'package:final_year/service/shared_preference.dart';
 import 'package:final_year/utils/button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:wifi_iot/wifi_iot.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:wifi_iot/wifi_iot.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 // ignore: must_be_immutable
@@ -31,29 +31,34 @@ class _QRCodeScannerState extends State<QRCodeScanner>
   late Animation<double> _animation;
   bool isConnectedToDevice = false;
   bool isLoading = false;
-  bool isDialogOpen = true; 
-  
+  bool isDialogOpen = true;
+
   final apiUrl = Uri.parse('http://192.168.4.1/wifi_param_by_app');
-bool showIndicator = true; // Indicator initially dikhayega
-
-
+  bool showIndicator = true; // Indicator initially dikhayega
 
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 8), () {
-    setState(() {
-      showIndicator = false; // Indicator remove ho jayega
-    });
-  });
     super.initState();
-    _requestPermissions();
+    _requestPermissions().then((_) {
+      setState(() {
+        cameraController =
+            MobileScannerController(); // Initialize after permissions
+      });
+    });
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2), // Adjust speed of the line
+      duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
 
     _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    cameraController.dispose();
+    super.dispose();
   }
 
   Future<void> _requestPermissions() async {
@@ -79,7 +84,7 @@ bool showIndicator = true; // Indicator initially dikhayega
         log('ESP32 successfully configured.');
         await _showdevicenameDialog(dssid, dpassword);
       } else {
-       Get.snackbar('Error', response.body);
+        Get.snackbar('Error', response.body);
 
         log('Error: ${response.body}');
       }
@@ -104,10 +109,9 @@ bool showIndicator = true; // Indicator initially dikhayega
         setState(() {
           isScanning = false;
           cameraController.stop();
-          isDialogOpen=false;
-          
+          isDialogOpen = false;
         });
-            
+
         _parseQRCode(code);
       }
     }
@@ -206,9 +210,10 @@ bool showIndicator = true; // Indicator initially dikhayega
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.grey.withOpacity(0.3), // Dark background
+          backgroundColor:
+              Colors.grey.withValues(alpha: 0.3), // Dark background
           title: Text(
-            'Response the time',
+            'Connect Damper to Wi-Fi',
             style: TextStyle(color: Colors.white), // White text
           ),
           content: SingleChildScrollView(
@@ -222,7 +227,7 @@ bool showIndicator = true; // Indicator initially dikhayega
                       borderSide:
                           BorderSide(color: Colors.green), // Green focus
                     ),
-                    labelText: 'Teacher ID',
+                    labelText: 'Connection Name',
                     labelStyle:
                         TextStyle(color: Colors.white), // White label text
                   ),
@@ -264,159 +269,148 @@ bool showIndicator = true; // Indicator initially dikhayega
     );
   }
 
-Future<void> _showdevicenameDialog(String ssid, String password) async {
-  // final isDarkMode = Get.isDarkMode; // ✅ Dark mode check
+  Future<void> _showdevicenameDialog(String ssid, String password) async {
+    // final isDarkMode = Get.isDarkMode; // ✅ Dark mode check
 
-  TextEditingController nameController = TextEditingController();
-  bool isDialogLoading = false;
+    TextEditingController nameController = TextEditingController();
+    bool isDialogLoading = false;
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return AlertDialog(
-            backgroundColor:Colors.grey.withOpacity(0.3) ,
-            title: Text(
-              'Teacher Name',
-              style: TextStyle(
-                color: Colors.white  // ✅ Dynamic text color
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              backgroundColor: Colors.grey.withValues(alpha: 0.3),
+              title: Text(
+                'Enter Your Device Name',
+                style: TextStyle(color: Colors.white // ✅ Dynamic text color
+                    ),
               ),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    style: TextStyle(color:  Colors.white),
-                    decoration: InputDecoration(
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.tealAccent ,
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.tealAccent,
+                          ),
                         ),
+                        labelText: 'Device Name',
+                        labelStyle: TextStyle(color: Colors.white),
                       ),
-                      labelText: 'Teacher Name',
-                      labelStyle: TextStyle(color: Colors.white),
+                      cursorColor: Colors.tealAccent,
                     ),
-                    cursorColor: Colors.tealAccent ,
-                  ),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              ElevatedButton(
-                onPressed: () async {
-                  setState(() {
-                    isDialogLoading = true;
-                  });
-
-                  final ssidd = nameController.text;
-                  final ip = "000.000.000.000";
-                  final mac = "00:00:00:00:00:00";
-                  String deviceid = ssid;
-
-                  debugPrint("$ip $mac $ssidd $deviceid");
-
-                  await SharedPreferencesService().sendDeviceData(
-                    data: DeviceModel(
-                      deviceId: deviceid,
-                      deviceIp: ip,
-                      deviceMac: mac,
-                      deviceName: ssidd,
-                    ),
-                  );
-
-                  final isDisconnect = await WiFiForIoTPlugin.disconnect();
-                  log("$isDisconnect Disconnected");
-
-                  final SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString('deviceId', deviceid);
-                  log("${prefs.getString('deviceId')} Device Saved");
-
-                  setState(() {
-                    isDialogLoading = false;
-                  });
-
-                  //  Get.offAll(() => NavBar());
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:  Colors.tealAccent,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                  ],
                 ),
-                child: isDialogLoading
-                    ? CircularProgressIndicator(color: Colors.white)
-                    : Text(
-                        "Send",
-                        style: TextStyle(color: Colors.black), // Adjusted text color for dark mode
-                      ),
               ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
+              actions: <Widget>[
+                ElevatedButton(
+                  onPressed: () async {
+                    setState(() {
+                      isDialogLoading = true;
+                    });
+
+                    final ssidd = nameController.text;
+                    final ip = "000.000.000.000";
+                    final mac = "00:00:00:00:00:00";
+                    String deviceid = ssid;
+
+                    log("$ip $mac $ssidd $deviceid");
+
+                    await SharedPreferencesService().sendDeviceData(
+                      data: DeviceModel(
+                        deviceId: deviceid,
+                        deviceIp: ip,
+                        deviceMac: mac,
+                        deviceName: ssidd,
+                      ),
+                    );
+
+                    final isDisconnect = await WiFiForIoTPlugin.disconnect();
+                    log("$isDisconnect Disconnected");
+
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.setString('deviceId', deviceid);
+                    log("${prefs.getString('deviceId')} Device Saved");
+
+                    setState(() {
+                      isDialogLoading = false;
+                    });
+
+                    Get.offAll(() => NavBar());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.tealAccent,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: isDialogLoading
+                      ? CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          "Send",
+                          style: TextStyle(
+                              color: Colors
+                                  .black), // Adjusted text color for dark mode
+                        ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
-
   Widget build(BuildContext context) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
     return Scaffold(
-  backgroundColor: Colors.black,
-  appBar: AppBar(
-    title: const Text('QR Code Scanner'),
-    foregroundColor: Colors.white,
-    backgroundColor: Colors.black,
-  ),
-  body: Stack(
-    children: [
-      ClipRRect(
-        child: isScanning
-            ? MobileScanner(
-                controller: cameraController,
-                onDetect: _onDetect,
-              )
-            : Center(
-                child: isDialogOpen
-                    ? SizedBox.shrink() 
-                    : SizedBox(
-                        width: 60,
-                        height: 60,
-                        child:  showIndicator
-    ? CircularProgressIndicator(
-        strokeWidth: 6,
-        color: Colors.white,
-      )
-    : SizedBox.shrink(),
-                      ),
-              ),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: const Text('QR Code Scanner'),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
       ),
-      if (isScanning)
-        Positioned(
-          top: 18,
-          left: 0,
-          right: 0,
-          child: AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) {
-              return Container(
-                margin: EdgeInsets.only(
-                    top: _animation.value * (Get.height * 0.8 - 10)),
-                height: 5,
-                width: double.infinity,
-                color: Colors.redAccent.withOpacity(0.8),
-              );
-            },
+      body: Stack(
+        children: [
+          ClipRRect(
+            child: isScanning
+                ? MobileScanner(
+                    controller: cameraController,
+                    onDetect: _onDetect,
+                  )
+                : Center(
+                    child: isDialogOpen ? SizedBox.shrink() : SizedBox(),
+                  ),
           ),
-        ),
-    ],
-  ),
-);
+          if (isScanning)
+            Positioned(
+              top: 18,
+              left: 0,
+              right: 0,
+              child: AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return Container(
+                    margin: EdgeInsets.only(
+                        top: _animation.value * (Get.height * 0.8 - 10)),
+                    height: 5,
+                    width: double.infinity,
+                    color: Colors.redAccent.withValues(alpha: 0.8),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }

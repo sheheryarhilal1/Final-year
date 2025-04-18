@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPreferencesService {
   final String _devicesKey = 'user_devices';
 
-  /// Listen to User Devices (simulating a stream using SharedPreferences)
   Stream<List<DeviceModel>> listenToUserDevices() async* {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     while (true) {
