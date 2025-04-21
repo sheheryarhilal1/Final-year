@@ -16,7 +16,6 @@ class LoginView extends GetView<LoginController> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-              
                 Container(
                   height: 120,
                   width: 120,
@@ -30,7 +29,6 @@ class LoginView extends GetView<LoginController> {
                   child:
                       const Icon(Icons.android, size: 80, color: Colors.black),
                 ),
-              
                 const SizedBox(height: 15),
                 const Text(
                   "Welcome to BIOSYNC",
@@ -41,9 +39,7 @@ class LoginView extends GetView<LoginController> {
                     letterSpacing: 1.2,
                   ),
                 ),
-
                 const SizedBox(height: 30),
-              
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),

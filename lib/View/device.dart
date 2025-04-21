@@ -43,7 +43,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.amberAccent,
+          backgroundColor: Color(0xFFADFF2F),
           title: Text('Edit Device Name'),
           content: TextField(
             controller: _nameController,
@@ -79,7 +79,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: Color(0xFFADFF2F),
         automaticallyImplyLeading: false,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

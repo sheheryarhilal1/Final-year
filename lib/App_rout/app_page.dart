@@ -13,10 +13,10 @@ class AppPages {
     GetPage(
         name: '/splash', page: () => SplashView(), binding: SplashBinding()),
     GetPage(name: '/login', page: () => LoginView(), binding: LoginBinding()),
-GetPage(
-  name: '/signup',
-  page: () => SignupView(),
-  binding: SignupBinding(),
-)
+    GetPage(
+      name: '/signup',
+      page: () => SignupView(),
+      binding: SignupBinding(),
+    )
   ];
 }

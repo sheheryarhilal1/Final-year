@@ -1,5 +1,4 @@
 import 'package:final_year/View/NAV_BAR/Nav_bar.dart';
-import 'package:final_year/View/QR_CODE.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,12 +19,11 @@ class LoginController extends GetxController {
         password: password.value.trim(),
       );
 
-      await Future.delayed(
-          const Duration(milliseconds: 800)); // Optional delay for UX
-      Get.to(() => NavBar                                                       ());
+      await Future.delayed(const Duration(milliseconds: 800));
+      Get.to(() => NavBar());
 
       Get.snackbar("Success", "Logged in successfully!",
-          snackPosition: SnackPosition.BOTTOM);
+          snackPosition: SnackPosition.TOP);
     } catch (e) {
       Get.snackbar("Login Failed", e.toString(),
           snackPosition: SnackPosition.TOP,

@@ -44,9 +44,9 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyC7zrAxnz_wXsQ1J9AmAHopfuXIuWO7hgQ',
     appId: '1:474942712627:web:31ad3dc343b14ee885ac46',
     messagingSenderId: '474942712627',
-    projectId: 'biosync-6d4f2',
-    authDomain: 'biosync-6d4f2.firebaseapp.com',
-    storageBucket: 'biosync-6d4f2.firebasestorage.app',
+    projectId: 'final_year-6d4f2',
+    authDomain: 'final_year-6d4f2.firebaseapp.com',
+    storageBucket: 'final_year-6d4f2.firebasestorage.app',
     measurementId: 'G-VGSW1K346Y',
   );
 
@@ -54,16 +54,16 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyBlBDUCOJ_gQyCz2cDjXckCZpE0LWhIp4E',
     appId: '1:474942712627:android:715d79af362a3fb485ac46',
     messagingSenderId: '474942712627',
-    projectId: 'biosync-6d4f2',
-    storageBucket: 'biosync-6d4f2.firebasestorage.app',
+    projectId: 'final_year-6d4f2',
+    storageBucket: 'final_year-6d4f2.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDj9E3Y4JIPey8wVgBOjnxV8wv6rTjZTj8',
     appId: '1:474942712627:ios:6e1d66de860b98b085ac46',
     messagingSenderId: '474942712627',
-    projectId: 'biosync-6d4f2',
-    storageBucket: 'biosync-6d4f2.firebasestorage.app',
+    projectId: 'final_year-6d4f2',
+    storageBucket: 'final_year-6d4f2.firebasestorage.app',
     iosBundleId: 'com.example.finalYear',
   );
 
@@ -71,8 +71,8 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyDj9E3Y4JIPey8wVgBOjnxV8wv6rTjZTj8',
     appId: '1:474942712627:ios:6e1d66de860b98b085ac46',
     messagingSenderId: '474942712627',
-    projectId: 'biosync-6d4f2',
-    storageBucket: 'biosync-6d4f2.firebasestorage.app',
+    projectId: 'final_year-6d4f2',
+    storageBucket: 'final_year-6d4f2.firebasestorage.app',
     iosBundleId: 'com.example.finalYear',
   );
 
@@ -80,9 +80,9 @@ class DefaultFirebaseOptions {
     apiKey: 'AIzaSyC7zrAxnz_wXsQ1J9AmAHopfuXIuWO7hgQ',
     appId: '1:474942712627:web:e28196f28f3e26fb85ac46',
     messagingSenderId: '474942712627',
-    projectId: 'biosync-6d4f2',
-    authDomain: 'biosync-6d4f2.firebaseapp.com',
-    storageBucket: 'biosync-6d4f2.firebasestorage.app',
+    projectId: 'final_year-6d4f2',
+    authDomain: 'final_year-6d4f2.firebaseapp.com',
+    storageBucket: 'final_year-6d4f2.firebasestorage.app',
     measurementId: 'G-BT4Z89VMQZ',
   );
 }

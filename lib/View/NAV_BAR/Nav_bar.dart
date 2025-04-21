@@ -7,7 +7,6 @@ class NavBar extends StatelessWidget {
   final NavBarController controller = Get.put(NavBarController());
   // final ThemeController themeController = Get.find<ThemeController>();
 
- 
   final List<Widget> screens = [
     DevicesScreen(),
     DevicesScreen(),
@@ -29,7 +28,7 @@ class NavBar extends StatelessWidget {
           children: screens,
         ),
         bottomNavigationBar: Container(
-          height: 60, 
+          height: 60,
           decoration: BoxDecoration(
             border: Border(
               top: BorderSide(
@@ -44,9 +43,10 @@ class NavBar extends StatelessWidget {
               type: BottomNavigationBarType.fixed,
               elevation: 0,
               backgroundColor: isDark ? Colors.grey[900] : Colors.white,
-              selectedItemColor:Color(0xFF24C48E),
-              unselectedItemColor:  Colors.grey.shade400,
-              selectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              selectedItemColor: Color(0xFFADFF2F),
+              unselectedItemColor: Colors.grey.shade400,
+              selectedLabelStyle:
+                  const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               unselectedLabelStyle: const TextStyle(fontSize: 10),
               iconSize: 30,
               onTap: (index) => controller.updateIndex(index),
@@ -54,7 +54,7 @@ class NavBar extends StatelessWidget {
               items: [
                 BottomNavigationBarItem(
                   icon: Padding(
-                    padding: const EdgeInsets.only(bottom: 2), 
+                    padding: const EdgeInsets.only(bottom: 2),
                     child: Icon(Icons.home_rounded),
                   ),
                   label: "home".tr,
