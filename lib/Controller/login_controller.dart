@@ -23,7 +23,8 @@ class LoginController extends GetxController {
       Get.to(() => NavBar());
 
       Get.snackbar("Success", "Logged in successfully!",
-          snackPosition: SnackPosition.TOP);
+          snackPosition: SnackPosition.TOP,
+          colorText: Colors.greenAccent);
     } catch (e) {
       Get.snackbar("Login Failed", e.toString(),
           snackPosition: SnackPosition.TOP,
