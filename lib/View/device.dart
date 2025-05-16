@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:final_year/Model/User_device_model.dart';
 import 'package:final_year/View/QR_CODE.dart';
+import 'package:final_year/View/qr_vie.dart';
 import 'package:final_year/service/shared_preference.dart';
 import 'package:final_year/utils/custom_widget/custom_widget.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +94,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
             IconButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => QRCodeScanner()));
+                      MaterialPageRoute(builder: (context) => QRDecryptionPage()));
                 },
                 icon: Icon(
                   Icons.add,
