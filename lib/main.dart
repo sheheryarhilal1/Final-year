@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'Controller/singup_controler.dart';
 import 'Controller/Splash_controler.dart';
+
 import 'Controller/login_controller.dart';
 import 'View/splash_view.dart';
 import 'View/login_view.dart';

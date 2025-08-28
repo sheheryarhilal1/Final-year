@@ -7,11 +7,11 @@ class NavBar extends StatelessWidget {
   final NavBarController controller = Get.put(NavBarController());
   // final ThemeController themeController = Get.find<ThemeController>();
 
-  final List<Widget> screens = [
-    DevicesScreen(),
-    DevicesScreen(),
-    DevicesScreen(),
-  ];
+  // final List<Widget> screens = [
+  //   DevicesScreen(),
+  //   DevicesScreen(),
+  //   DevicesScreen(),
+  // ];
 
   NavBar({super.key});
 
@@ -25,7 +25,7 @@ class NavBar extends StatelessWidget {
         backgroundColor: theme.colorScheme.background,
         body: IndexedStack(
           index: controller.currentIndex.value,
-          children: screens,
+          // children: screens,
         ),
         bottomNavigationBar: Container(
           height: 60,

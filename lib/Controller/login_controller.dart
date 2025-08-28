@@ -1,4 +1,5 @@
 import 'package:final_year/View/NAV_BAR/Nav_bar.dart';
+import 'package:final_year/View/qr_generator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,7 @@ class LoginController extends GetxController {
       );
 
       await Future.delayed(const Duration(milliseconds: 800));
-      Get.to(() => NavBar());
+      Get.to(() => QRGeneratorScreen());
 
       Get.snackbar("Success", "Logged in successfully!",
           snackPosition: SnackPosition.TOP,
