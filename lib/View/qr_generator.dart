@@ -54,7 +54,7 @@ backgroundColor: Colors.black87.withOpacity(0.9),
     'Go to Scanner',
     style: TextStyle(
       color: Colors.black,        // text foreground color
-      backgroundColor: Colors.greenAccent, // text background if needed
+      // backgroundColor: Colors.greenAccent, // text background if needed
       fontSize: 16,
       fontWeight: FontWeight.bold,
     ),

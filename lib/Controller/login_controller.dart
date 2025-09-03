@@ -1,4 +1,3 @@
-import 'package:final_year/View/NAV_BAR/Nav_bar.dart';
 import 'package:final_year/View/qr_generator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,4 @@
 import 'package:final_year/Controller/Nav_bar_controller.dart';
-import 'package:final_year/View/device.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
