@@ -39,7 +39,7 @@ backgroundColor: Colors.black87.withOpacity(0.9),
   onPressed: () {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => QRScannerScreen()),
+      MaterialPageRoute(builder: (context) => QRManagerScreen()),
     );
   },
   style: ElevatedButton.styleFrom(

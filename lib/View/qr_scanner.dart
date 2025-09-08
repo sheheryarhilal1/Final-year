@@ -5,297 +5,168 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: QRScannerScreen(),
+    home: QRManagerScreen(),
   ));
 }
 
 // Global local list
 List<Map<String, dynamic>> localAttendance = [];
 
-// ---------- Standalone Popup Function ----------
-Future<void> showPopup(
-  BuildContext context,
-  Map<String, dynamic> data, {
-  int? existingIndex,
-}) async {
-  TextEditingController teacherController =
-      TextEditingController(text: data["teacher"] ?? "");
-  TextEditingController passwordController =
-      TextEditingController(text: data["password"] ?? "");
-  TextEditingController classIdController =
-      TextEditingController(text: data["classId"] ?? "");
+class QRManagerScreen extends StatefulWidget {
+  @override
+  State<QRManagerScreen> createState() => _QRManagerScreenState();
+}
 
-  String timeIn = data["timeIn"] ?? "";
-  String? outTime =
-      (data["outTime"] != "Not marked yet" && data["outTime"] != null)
-          ? data["outTime"]
-          : null;
+class _QRManagerScreenState extends State<QRManagerScreen> {
+  // Function to show popup after scanning QR
+  Future<void> showPopup(
+    BuildContext context,
+    Map<String, dynamic> data, {
+    int? existingIndex,
+  }) async {
+    String teacher = data["teacher"] ?? "";
+    String password = data["password"] ?? "";
+    String classId = data["classId"] ?? "";
 
-  showDialog(
-    context: context,
-    builder: (_) => StatefulBuilder(
-      builder: (context, setState) => AlertDialog(
+    String timeIn = existingIndex == null
+        ? ""
+        : localAttendance[existingIndex]["timeIn"] ?? "";
+    String outTime = existingIndex == null
+        ? ""
+        : localAttendance[existingIndex]["outTime"] ?? "";
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
         title: Text('QR Details'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: teacherController,
-                decoration: InputDecoration(labelText: "👨‍🏫 Teacher"),
-                enabled: existingIndex == null,
-              ),
-              TextField(
-                controller: passwordController,
-                decoration: InputDecoration(labelText: "🔐 Password"),
-                enabled: existingIndex == null,
-              ),
-              TextField(
-                controller: classIdController,
-                decoration: InputDecoration(labelText: "🏷️ Class ID"),
-                enabled: existingIndex == null,
-              ),
-              SizedBox(height: 10),
-              Text("⏰ Time In: ${timeIn.isNotEmpty ? timeIn : 'Not marked yet'}"),
-              SizedBox(height: 10),
-              Text("🏁 Out Time: ${outTime ?? 'Not marked yet'}"),
-              SizedBox(height: 12),
-
-              if (existingIndex == null)
-                ElevatedButton.icon(
-                  icon: Icon(Icons.login),
-                  label: Text("Mark Time In"),
-                  onPressed: () async {
-                    final newTimeIn = DateTime.now().toString();
-                    final savedEntry = {
-                      "teacher": teacherController.text,
-                      "password": passwordController.text,
-                      "classId": classIdController.text,
-                      "timeIn": newTimeIn,
-                      "outTime": "Not marked yet",
-                    };
-
-                    // Save in local list
-                    localAttendance.add(savedEntry);
-
-                    Navigator.of(context, rootNavigator: true).pop();
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Time In saved!")),
-                    );
-
-                    Future.microtask(() {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => SavedDataScreen()),
-                      );
-                    });
-                  },
-                )
-              else
-                ElevatedButton.icon(
-                  icon: Icon(Icons.logout),
-                  label: Text("Mark Time Out"),
-                  onPressed: () async {
-                    final newOutTime = DateTime.now().toString();
-
-                    localAttendance[existingIndex]["outTime"] = newOutTime;
-
-                    Navigator.of(context, rootNavigator: true).pop();
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Time Out saved!")),
-                    );
-
-                    Future.microtask(() {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => SavedDataScreen()),
-                      );
-                    });
-                  },
-                ),
-            ],
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("👨‍🏫 Teacher: $teacher"),
+            Text("🔐 Password: $password"),
+            Text("🏷️ Class ID: $classId"),
+            SizedBox(height: 10),
+            Text("⏰ Time In: ${timeIn.isNotEmpty ? timeIn : 'Not marked yet'}"),
+            Text("🏁 Out Time: ${outTime.isNotEmpty ? outTime : 'Not marked yet'}"),
+          ],
         ),
-      ),
-    ),
-  );
-}
-
-// ---------- Scanner Screen ----------
-class QRScannerScreen extends StatefulWidget {
-  @override
-  State<QRScannerScreen> createState() => _QRScannerScreenState();
-}
-
-class _QRScannerScreenState extends State<QRScannerScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("📷 QR Scanner"),
-        backgroundColor: Color(0xFFADFF2F),
-      ),
-      body: MobileScanner(
-        onDetect: (capture) {
-          final String? data = capture.barcodes.first.rawValue;
-          if (data != null) {
-            try {
-              final decoded = jsonDecode(data);
-              showPopup(context, decoded);
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Invalid QR Data")),
-              );
-            }
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: Icon(Icons.save),
-        foregroundColor: Colors.black,
-        label: Text("Saved Scans"),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SavedDataScreen()),
-          );
-        },
+        actions: [
+          if (existingIndex == null)
+            ElevatedButton.icon(
+              icon: Icon(Icons.login),
+              label: Text("Mark Time In"),
+              onPressed: () {
+                final newEntry = {
+                  "teacher": teacher,
+                  "password": password,
+                  "classId": classId,
+                  "timeIn": DateTime.now().toString(),
+                  "outTime": "",
+                };
+                localAttendance.add(newEntry);
+                Navigator.pop(context);
+                setState(() {});
+              },
+            )
+          else
+            ElevatedButton.icon(
+              icon: Icon(Icons.logout),
+              label: Text("Mark Time Out"),
+              onPressed: () {
+                localAttendance[existingIndex]["outTime"] =
+                    DateTime.now().toString();
+                Navigator.pop(context);
+                setState(() {});
+              },
+            ),
+        ],
       ),
     );
   }
-}
 
-// ---------- Saved Data Screen ----------
-class SavedDataScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    if (localAttendance.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('📚 Saved Scans'),
-          backgroundColor: Colors.greenAccent,
-        ),
-        body: Center(
-          child: Text(
-            'No data saved yet.',
-            style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+  // Scanner widget
+  void scanAndShowPopup({int? editIndex}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          appBar: AppBar(title: Text("📷 Scan QR")),
+          body: MobileScanner(
+            onDetect: (capture) {
+              final String? data = capture.barcodes.first.rawValue;
+              if (data != null) {
+                try {
+                  final decoded = jsonDecode(data);
+                  Navigator.pop(context); // Close scanner
+                  showPopup(context, decoded, existingIndex: editIndex);
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Invalid QR Data")),
+                  );
+                }
+              }
+            },
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('📚 Saved Scans'),
+        title: Text("Attendance System"),
         backgroundColor: Colors.greenAccent,
       ),
-      body: ListView.builder(
-        padding: EdgeInsets.all(12),
-        itemCount: localAttendance.length,
-        itemBuilder: (context, index) {
-          final entry = localAttendance[index];
-
-          return Card(
-            margin: EdgeInsets.symmetric(vertical: 8),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit, color: Colors.orange),
-                        onPressed: () {
-                          showPopup(context, entry, existingIndex: index);
-                        },
-                      ),
-                      // IconButton(
-                      //   icon: Icon(Icons.delete, color: Colors.red),
-                      //   onPressed: () async {
-                      //     localAttendance.removeAt(index);
-                      //     ScaffoldMessenger.of(context).showSnackBar(
-                      //       SnackBar(content: Text("Record deleted!")),
-                      //     );
-                      //     (context as Element).reassemble();
-                      //   },
-                      // ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.person, color: Colors.deepPurple),
-                      SizedBox(width: 8),
-                      Text('Teacher:',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
-                      SizedBox(width: 6),
-                      Text(entry["teacher"] ?? ""),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.lock, color: Colors.deepPurple),
-                      SizedBox(width: 8),
-                      Text('Password:',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
-                      SizedBox(width: 6),
-                      Text(entry["password"] ?? ""),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.class_, color: Colors.deepPurple),
-                      SizedBox(width: 8),
-                      Text('Class ID:',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
-                      SizedBox(width: 6),
-                      Text(entry["classId"] ?? ""),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.access_time, color: Colors.deepPurple),
-                      SizedBox(width: 8),
-                      Text('Time In:',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
-                      SizedBox(width: 6),
-                      Expanded(
-                          child: Text(entry["timeIn"] ?? "",
-                              overflow: TextOverflow.ellipsis)),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.exit_to_app, color: Colors.deepPurple),
-                      SizedBox(width: 8),
-                      Text('Out Time:',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16)),
-                      SizedBox(width: 6),
-                      Expanded(
-                          child: Text(entry["outTime"] ?? "",
-                              overflow: TextOverflow.ellipsis)),
-                    ],
-                  ),
-                ],
+      body: localAttendance.isEmpty
+          ? Center(
+              child: Text(
+                "No records yet. Scan a QR to add.",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
+            )
+          : ListView.builder(
+              padding: EdgeInsets.all(12),
+              itemCount: localAttendance.length,
+              itemBuilder: (context, index) {
+                final entry = localAttendance[index];
+                return Card(
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  elevation: 4,
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit, color: Colors.orange),
+                              onPressed: () {
+                                scanAndShowPopup(editIndex: index);
+                              },
+                            ),
+                          ],
+                        ),
+                        Text("👨‍🏫 Teacher: ${entry['teacher']}"),
+                        Text("🔐 Password: ${entry['password']}"),
+                        Text("🏷️ Class ID: ${entry['classId']}"),
+                        Text("⏰ Time In: ${entry['timeIn']}"),
+                        Text("🏁 Out Time: ${entry['outTime'].isEmpty ? 'Not marked yet' : entry['outTime']}"),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => scanAndShowPopup(),
+        icon: Icon(Icons.qr_code_scanner),
+        label: Text("Scan QR"),
       ),
     );
   }
