@@ -1,12 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class SignupController extends GetxController {
   var email = ''.obs;
   var password = ''.obs;
   var confirmPassword = ''.obs;
   var username = ''.obs;
+
+  // ✅ static variables jo globally accessible rahenge
+  static String savedUsername = "";
+  static String savedPassword = "";
 
   var isPasswordHidden = true.obs;
   var isConfirmPasswordHidden = true.obs;
@@ -31,12 +35,15 @@ class SignupController extends GetxController {
         password: password.value.trim(),
       );
 
+      // ✅ Save username & password globally
+      savedUsername = username.value.trim();
+      savedPassword = password.value.trim();
+
       Get.snackbar("Success", "Account created for ${email.value}");
-      Get.offNamed('/login'); // or wherever you want to take them after signup
+      Get.offNamed('/login');
     } catch (e) {
       Get.snackbar("Sign Up Failed", e.toString(),
           snackPosition: SnackPosition.TOP,
-          // backgroundColor: Colors.redAccent,
           colorText: Colors.greenAccent);
     }
   }

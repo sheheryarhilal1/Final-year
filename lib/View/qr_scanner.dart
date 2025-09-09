@@ -1,16 +1,27 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+import '../Controller/singup_controler.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: QRManagerScreen(),
   ));
 }
 
-// Global local list
+// Global attendance list
 List<Map<String, dynamic>> localAttendance = [];
+
+/// 💾 Save data permanently
+Future<void> _saveData() async {
+  final prefs = await SharedPreferences.getInstance();
+  String jsonData = jsonEncode(localAttendance);
+  await prefs.setString("attendance_records", jsonData);
+}
 
 class QRManagerScreen extends StatefulWidget {
   @override
@@ -18,15 +29,36 @@ class QRManagerScreen extends StatefulWidget {
 }
 
 class _QRManagerScreenState extends State<QRManagerScreen> {
-  // Function to show popup after scanning QR
-  Future<void> showPopup(
-    BuildContext context,
-    Map<String, dynamic> data, {
-    int? existingIndex,
-  }) async {
-    String teacher = data["teacher"] ?? "";
-    String password = data["password"] ?? "";
-    String classId = data["classId"] ?? "";
+  @override
+  void initState() {
+    super.initState();
+    _loadData(); // app khulte hi data load hoga
+  }
+
+  /// 🔄 Load saved data
+  Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? jsonData = prefs.getString("attendance_records");
+    if (jsonData != null) {
+      setState(() {
+        localAttendance =
+            List<Map<String, dynamic>>.from(jsonDecode(jsonData));
+      });
+    }
+  }
+
+  /// 📌 Popup for marking Time In / Out
+  Future<void> showPopup(BuildContext context, Map<String, dynamic> data,
+      {int? existingIndex}) async {
+    String teacher = SignupController.savedUsername;
+    String password = SignupController.savedPassword;
+
+    String classId = existingIndex == null
+        ? (data["classId"] ?? "")
+        : localAttendance[existingIndex]["classId"];
+
+    TextEditingController classIdController =
+        TextEditingController(text: classId);
 
     String timeIn = existingIndex == null
         ? ""
@@ -42,9 +74,26 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("👨‍🏫 Teacher: $teacher"),
-            Text("🔐 Password: $password"),
-            Text("🏷️ Class ID: $classId"),
+            TextField(
+              decoration: InputDecoration(labelText: "👨‍🏫 Teacher"),
+              controller: TextEditingController(text: teacher),
+              readOnly: true,
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: "🔐 Password"),
+              controller: TextEditingController(text: password),
+              readOnly: true,
+              obscureText: true,
+            ),
+            TextField(
+              controller: classIdController,
+              readOnly: existingIndex != null,
+              decoration: InputDecoration(
+                labelText: existingIndex == null
+                    ? "🏷️ Class ID (Editable)"
+                    : "🏷️ Class ID",
+              ),
+            ),
             SizedBox(height: 10),
             Text("⏰ Time In: ${timeIn.isNotEmpty ? timeIn : 'Not marked yet'}"),
             Text("🏁 Out Time: ${outTime.isNotEmpty ? outTime : 'Not marked yet'}"),
@@ -55,15 +104,16 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
             ElevatedButton.icon(
               icon: Icon(Icons.login),
               label: Text("Mark Time In"),
-              onPressed: () {
+              onPressed: () async {
                 final newEntry = {
                   "teacher": teacher,
                   "password": password,
-                  "classId": classId,
+                  "classId": classIdController.text,
                   "timeIn": DateTime.now().toString(),
                   "outTime": "",
                 };
                 localAttendance.add(newEntry);
+                await _saveData();
                 Navigator.pop(context);
                 setState(() {});
               },
@@ -72,9 +122,10 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
             ElevatedButton.icon(
               icon: Icon(Icons.logout),
               label: Text("Mark Time Out"),
-              onPressed: () {
+              onPressed: () async {
                 localAttendance[existingIndex]["outTime"] =
                     DateTime.now().toString();
+                await _saveData();
                 Navigator.pop(context);
                 setState(() {});
               },
@@ -84,7 +135,7 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
     );
   }
 
-  // Scanner widget
+  /// 📷 QR Scan and show popup
   void scanAndShowPopup({int? editIndex}) {
     Navigator.push(
       context,
@@ -97,7 +148,7 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
               if (data != null) {
                 try {
                   final decoded = jsonDecode(data);
-                  Navigator.pop(context); // Close scanner
+                  Navigator.pop(context);
                   showPopup(context, decoded, existingIndex: editIndex);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -153,7 +204,7 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
                           ],
                         ),
                         Text("👨‍🏫 Teacher: ${entry['teacher']}"),
-                        Text("🔐 Password: ${entry['password']}"),
+                        Text("🔐 Password: ${'*' * entry['password'].length}"),
                         Text("🏷️ Class ID: ${entry['classId']}"),
                         Text("⏰ Time In: ${entry['timeIn']}"),
                         Text("🏁 Out Time: ${entry['outTime'].isEmpty ? 'Not marked yet' : entry['outTime']}"),
