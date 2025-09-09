@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupController extends GetxController {
   var email = ''.obs;
@@ -23,13 +24,14 @@ class SignupController extends GetxController {
     isConfirmPasswordHidden.value = !isConfirmPasswordHidden.value;
   }
 
-  void signup() async {
+  Future<void> signup() async {
     if (password.value != confirmPassword.value) {
       Get.snackbar("Error", "Passwords do not match");
       return;
     }
 
     try {
+      // 🔐 Firebase account create
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email.value.trim(),
         password: password.value.trim(),
@@ -38,6 +40,11 @@ class SignupController extends GetxController {
       // ✅ Save username & password globally
       savedUsername = username.value.trim();
       savedPassword = password.value.trim();
+
+      // 💾 Save locally in SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("username", savedUsername);
+      await prefs.setString("password", savedPassword);
 
       Get.snackbar("Success", "Account created for ${email.value}");
       Get.offNamed('/login');

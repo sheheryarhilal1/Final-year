@@ -201,6 +201,12 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
                                 scanAndShowPopup(editIndex: index);
                               },
                             ),
+                            IconButton(
+                              icon: Icon(Icons.delete, color: Colors.red),
+                              onPressed: () {
+                                scanAndShowPopup(editIndex: index);
+                              },
+                            ),
                           ],
                         ),
                         Text("👨‍🏫 Teacher: ${entry['teacher']}"),
