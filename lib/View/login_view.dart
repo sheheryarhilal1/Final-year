@@ -4,6 +4,7 @@ import 'package:final_year/View/singup_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:final_year/Controller/login_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginView extends GetView<LoginController> {
   @override
@@ -26,8 +27,7 @@ class LoginView extends GetView<LoginController> {
                       radius: 0.8,
                     ),
                   ),
-                  child:
-                      const Icon(Icons.android, size: 80, color: Colors.black),
+                  child: const Icon(Icons.android, size: 80, color: Colors.black),
                 ),
                 const SizedBox(height: 15),
                 const Text(
@@ -79,22 +79,19 @@ class LoginView extends GetView<LoginController> {
                                 hintText: 'Email',
                                 hintStyle: TextStyle(color: Colors.greenAccent),
                                 enabledBorder: UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.greenAccent),
+                                  borderSide: BorderSide(color: Colors.greenAccent),
                                 ),
                               ),
                             ),
                             const SizedBox(height: 20),
                             Obx(
                               () => TextField(
-                                onChanged: (val) =>
-                                    controller.password.value = val,
+                                onChanged: (val) => controller.password.value = val,
                                 obscureText: controller.isPasswordHidden.value,
                                 style: const TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                   hintText: 'Password',
-                                  hintStyle: const TextStyle(
-                                      color: Colors.greenAccent),
+                                  hintStyle: const TextStyle(color: Colors.greenAccent),
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       controller.isPasswordHidden.value
@@ -102,19 +99,24 @@ class LoginView extends GetView<LoginController> {
                                           : Icons.visibility_off,
                                       color: Colors.greenAccent,
                                     ),
-                                    onPressed:
-                                        controller.togglePasswordVisibility,
+                                    onPressed: controller.togglePasswordVisibility,
                                   ),
                                   enabledBorder: const UnderlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.greenAccent),
+                                    borderSide: BorderSide(color: Colors.greenAccent),
                                   ),
                                 ),
                               ),
                             ),
                             const SizedBox(height: 30),
                             ElevatedButton(
-                              onPressed: controller.login,
+                              onPressed: () async {
+                                // 👇 Save password into SharedPreferences
+                                final prefs = await SharedPreferences.getInstance();
+                                await prefs.setString("user_password", controller.password.value);
+
+                                // Call your login function
+                                controller.login();
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.greenAccent,
                                 foregroundColor: Colors.black,
