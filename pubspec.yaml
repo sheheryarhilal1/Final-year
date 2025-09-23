@@ -50,6 +50,7 @@ dependencies:
   cloud_firestore: ^5.6.12
   shared_preferences: ^2.5.3
   uuid: ^4.5.1
+  image_picker: ^1.2.0
 
 
 
