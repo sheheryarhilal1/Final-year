@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // ✅ Firestore
 import '../utils/custom_bottom nav.dart';
 
 void main() async {
@@ -28,7 +27,7 @@ void main() async {
   ));
 }
 
-// Global attendance list (for offline caching only)
+// Global attendance list (local storage only)
 List<Map<String, dynamic>> localAttendance = [];
 
 Future<void> _saveData() async {
@@ -45,8 +44,6 @@ class QRManagerScreen extends StatefulWidget {
 class _QRManagerScreenState extends State<QRManagerScreen> {
   bool _isLoading = true;
   int _currentIndex = 0;
-
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -65,27 +62,6 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
     setState(() {
       _isLoading = false;
     });
-  }
-
-  addData(String name, String password, String tokenno, String timein,
-      String timeout) async {
-    if (name == "" &&
-        password == "" &&
-        tokenno == "" &&
-        timein == "" &&
-        timeout == "") {
-      log("Enter required field");
-    } else {
-      FirebaseFirestore.instance.collection("user").doc(name).set({
-        "name": name,
-        "password": password,
-        "tokenno": tokenno,
-        "timein": timein,
-        "timeout": timeout
-      }).then((value) {
-        log("message");
-      });
-    }
   }
 
   Future<void> showPopup(BuildContext context, Map<String, dynamic> data,
@@ -167,12 +143,11 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
                   "token": data["token"] ?? "N/A",
                 };
 
-                localAttendance.add(newEntry);
+                setState(() {
+                  localAttendance.add(newEntry);
+                });
                 await _saveData();
-
-                await _firestore.collection("attendance_records").add(newEntry);
                 Navigator.pop(context);
-                setState(() {});
               },
             )
           else
@@ -180,38 +155,12 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
               icon: const Icon(Icons.logout),
               label: const Text("Mark Time Out"),
               onPressed: () async {
-                localAttendance[existingIndex]["outTime"] =
-                    DateTime.now().toString();
-                await _saveData();
-                addData(
-                    teacher.toString(),
-                    password.toString(),
-                    data["token"] ?? "N/A",
-                    DateTime.now().toString(),
-                    DateTime.now().toString());
-
-                await _firestore
-                    .collection("attendance_records")
-                    .where("teacher",
-                        isEqualTo: localAttendance[existingIndex]["teacher"])
-                    .where("classId",
-                        isEqualTo: localAttendance[existingIndex]["classId"])
-                    .where("token",
-                        isEqualTo: localAttendance[existingIndex]["token"])
-                    .get()
-                    .then((snapshot) {
-                  for (var doc in snapshot.docs) {
-                    _firestore
-                        .collection("attendance_records")
-                        .doc(doc.id)
-                        .update({
-                      "outTime": localAttendance[existingIndex]["outTime"],
-                    });
-                  }
+                setState(() {
+                  localAttendance[existingIndex]["outTime"] =
+                      DateTime.now().toString();
                 });
-
+                await _saveData();
                 Navigator.pop(context);
-                setState(() {});
               },
             ),
         ],
@@ -226,7 +175,7 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
         builder: (_) => Scaffold(
           backgroundColor: Colors.black,
           appBar: AppBar(
-            backgroundColor: Colors.green, // ✅ Scan screen AppBar green
+            backgroundColor: Colors.green,
             title: const Text("📷 Scan QR"),
           ),
           body: MobileScanner(
@@ -257,7 +206,6 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
         _buildScreenWithAppBar("Attendance System", _buildAttendanceList()),
         _buildScreenWithAppBar("Report", const Center(child: Text("Daily Report"))),
         _buildScreenWithAppBar("QR Scan", const Center(child: Text("QR Scan Screen"))),
-        // _buildScreenWithAppBar("History", const Center(child: Text("History Screen"))),
         ProfileScreen(),
         HomeScreen()
       ];
@@ -266,7 +214,7 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.green, // ✅ All AppBars green
+        backgroundColor: Colors.green,
         title: Text(title),
       ),
       body: child,
@@ -274,79 +222,70 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
   }
 
   Widget _buildAttendanceList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection("attendance_records")
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    if (localAttendance.isEmpty) {
+      return const Center(
+        child: Text(
+          "No records yet. Scan a QR to add.",
+          style: TextStyle(fontSize: 16, color: Colors.white70),
+        ),
+      );
+    }
 
-        if (snapshot.data!.docs.isEmpty) {
-          return const Center(
-            child: Text(
-              "No records yet. Scan a QR to add.",
-              style: TextStyle(fontSize: 16, color: Colors.white70),
-            ),
-          );
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(12),
-          itemCount: snapshot.data!.docs.length,
-          itemBuilder: (context, index) {
-            final entry =
-                snapshot.data!.docs[index].data() as Map<String, dynamic>;
-            return Card(
-              color: Colors.grey[900],
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return ListView.builder(
+      padding: const EdgeInsets.all(12),
+      itemCount: localAttendance.length,
+      itemBuilder: (context, index) {
+        final entry = localAttendance[index];
+        return Card(
+          color: Colors.grey[900],
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 4,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.greenAccent),
-                          onPressed: () {
-                            scanAndShowPopup(editIndex: index);
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.redAccent),
-                          onPressed: () async {
-                            await snapshot.data!.docs[index].reference.delete();
-                            setState(() {});
-                          },
-                        ),
-                      ],
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.greenAccent),
+                      onPressed: () {
+                        scanAndShowPopup(editIndex: index);
+                      },
                     ),
-                    Text("👨‍🏫 Teacher: ${entry['teacher']}",
-                        style: const TextStyle(color: Colors.white)),
-                    Text(
-                        "🔐 Password: ${entry['password'] != null ? '*' * entry['password'].length : ''}",
-                        style: const TextStyle(color: Colors.white)),
-                    Text("🏷️ Class ID: ${entry['classId']}",
-                        style: const TextStyle(color: Colors.white)),
-                    Text("🆔 Token: ${entry['token'] ?? 'N/A'}",
-                        style: const TextStyle(color: Colors.white)),
-                    Text("⏰ Time In: ${entry['timeIn']}",
-                        style: const TextStyle(color: Colors.white)),
-                    Text(
-                        "🏁 Out Time: ${entry['outTime'] != null && entry['outTime'].isNotEmpty ? entry['outTime'] : 'Not marked yet'}",
-                        style: const TextStyle(color: Colors.white)),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.redAccent),
+                      onPressed: () async {
+                        setState(() {
+                          localAttendance.removeAt(index);
+                          _saveData();
+                        });
+                      },
+                    ),
                   ],
                 ),
-              ),
-            );
-          },
+                Text("👨‍🏫 Teacher: ${entry['teacher']}",
+                    style: const TextStyle(color: Colors.white)),
+                Text(
+                    "🔐 Password: ${entry['password'] != null ? '*' * entry['password'].length : ''}",
+                    style: const TextStyle(color: Colors.white)),
+                Text("🏷️ Class ID: ${entry['classId']}",
+                    style: const TextStyle(color: Colors.white)),
+                Text("🆔 Token: ${entry['token'] ?? 'N/A'}",
+                    style: const TextStyle(color: Colors.white)),
+                Text("⏰ Time In: ${entry['timeIn']}",
+                    style: const TextStyle(color: Colors.white)),
+                Text(
+                  "🏁 Out Time: ${entry['outTime'] != null && entry['outTime'].isNotEmpty ? entry['outTime'] : 'Not marked yet'}",
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -356,7 +295,9 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: _screens()[_currentIndex],
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _screens()[_currentIndex],
       bottomNavigationBar: CustomBottomNav(
         currentIndex: _currentIndex,
         onTabChanged: (index) {
