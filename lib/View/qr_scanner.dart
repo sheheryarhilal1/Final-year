@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:final_year/View/Profile_screen.dart';
 import 'package:final_year/View/Setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -256,7 +257,8 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
         _buildScreenWithAppBar("Attendance System", _buildAttendanceList()),
         _buildScreenWithAppBar("Report", const Center(child: Text("Daily Report"))),
         _buildScreenWithAppBar("QR Scan", const Center(child: Text("QR Scan Screen"))),
-        _buildScreenWithAppBar("History", const Center(child: Text("History Screen"))),
+        // _buildScreenWithAppBar("History", const Center(child: Text("History Screen"))),
+        ProfileScreen(),
         HomeScreen()
       ];
 
