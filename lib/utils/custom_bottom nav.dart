@@ -13,7 +13,6 @@ class CustomBottomNav extends StatefulWidget {
 class _CustomBottomNavState extends State<CustomBottomNav> {
   @override
   Widget build(BuildContext context) {
-    int _currentIndex = widget.currentIndex;
 
     return Container(
       decoration: BoxDecoration(
