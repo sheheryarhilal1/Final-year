@@ -3,6 +3,7 @@ import 'package:final_year/View/qr_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'attendence_report.dart'; // ✅ import attendance report screen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -121,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
-        leading: const Icon(Icons.menu, color: Colors.white),
+        // leading: const Icon(Icons.menu, color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -158,11 +159,30 @@ class _HomeScreenState extends State<HomeScreen> {
             // Reports list
             Expanded(
               child: ListView(
-                children: const [
-                  ReportTile(icon: Icons.assignment, text: "Attendance Report", color: Colors.red),
-                  ReportTile(icon: Icons.summarize, text: "Summary Report", color: Colors.blue),
-                  ReportTile(icon: Icons.insert_drive_file, text: "All Generate Report", color: Colors.teal),
-                  ReportTile(icon: Icons.access_time, text: "Overtime Report", color: Colors.green),
+                children: [
+                  ReportTile(
+                    icon: Icons.assignment,
+                    text: "Attendance Report",
+                    color: Colors.red,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => AttendanceReportScreen()),
+                      );
+                    },
+                  ),
+                  const ReportTile(
+                      icon: Icons.summarize,
+                      text: "Summary Report",
+                      color: Colors.blue),
+                  const ReportTile(
+                      icon: Icons.insert_drive_file,
+                      text: "All Generate Report",
+                      color: Colors.teal),
+                  const ReportTile(
+                      icon: Icons.access_time,
+                      text: "Overtime Report",
+                      color: Colors.green),
                 ],
               ),
             ),
@@ -188,7 +208,10 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Colors.grey[900],
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(color: Colors.grey.shade800, blurRadius: 6, offset: const Offset(2, 2)),
+            BoxShadow(
+                color: Colors.grey.shade800,
+                blurRadius: 6,
+                offset: const Offset(2, 2)),
           ],
         ),
         child: Column(
@@ -202,7 +225,8 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 10),
             Text(
               text,
-              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: Colors.white),
+              style: const TextStyle(
+                  fontWeight: FontWeight.w500, fontSize: 14, color: Colors.white),
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 6),
@@ -222,12 +246,14 @@ class ReportTile extends StatelessWidget {
   final IconData icon;
   final String text;
   final Color color;
+  final VoidCallback? onTap; // ✅ added callback
 
   const ReportTile({
     super.key,
     required this.icon,
     required this.text,
     required this.color,
+    this.onTap,
   });
 
   @override
@@ -241,10 +267,12 @@ class ReportTile extends StatelessWidget {
         leading: Icon(icon, color: color),
         title: Text(
           text,
-          style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+          style: const TextStyle(
+              fontWeight: FontWeight.w500, color: Colors.white),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.white70),
-        onTap: () {},
+        trailing: const Icon(Icons.arrow_forward_ios,
+            size: 18, color: Colors.white70),
+        onTap: onTap, // ✅ use passed callback
       ),
     );
   }

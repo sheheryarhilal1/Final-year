@@ -63,6 +63,42 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
     });
   }
 
+  // 🔹 Helper: Calculate Daily / Weekly / Monthly Summary
+  Map<String, int> calculateSummary() {
+    int daily = 0, weekly = 0, monthly = 0;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    for (var record in localAttendance) {
+      if (record["timeIn"] == null || record["timeIn"].isEmpty) continue;
+
+      DateTime date = DateTime.parse(record["timeIn"]);
+      final recordDate = DateTime(date.year, date.month, date.day);
+
+      // Daily
+      if (recordDate == today) {
+        daily++;
+      }
+
+      // Weekly (last 7 days)
+      if (now.difference(recordDate).inDays < 7) {
+        weekly++;
+      }
+
+      // Monthly (same month & year)
+      if (recordDate.month == now.month && recordDate.year == now.year) {
+        monthly++;
+      }
+    }
+
+    return {
+      "daily": daily,
+      "weekly": weekly,
+      "monthly": monthly,
+    };
+  }
+
   Future<void> showPopup(BuildContext context, Map<String, dynamic> data,
       {int? existingIndex}) async {
     String email = FirebaseAuth.instance.currentUser?.email ?? "";
@@ -230,63 +266,99 @@ class _QRManagerScreenState extends State<QRManagerScreen> {
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: localAttendance.length,
-      itemBuilder: (context, index) {
-        final entry = localAttendance[index];
-        return Card(
-          color: Colors.grey[900],
-          margin: const EdgeInsets.symmetric(vertical: 8),
+    final summary = calculateSummary();
+
+    return Column(
+      children: [
+        // 🔹 Summary Card
+        Card(
+          color: Colors.green[900],
+          margin: const EdgeInsets.all(12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          elevation: 4,
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                Column(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.greenAccent),
-                      onPressed: () {
-                        scanAndShowPopup(editIndex: index);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.redAccent),
-                      onPressed: () async {
-                        setState(() {
-                          localAttendance.removeAt(index);
-                          _saveData();
-                        });
-                      },
-                    ),
+                    const Text("Daily", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text("${summary["daily"]}", style: const TextStyle(color: Colors.white, fontSize: 18)),
                   ],
                 ),
-                Text("👨‍🏫 Teacher: ${entry['teacher']}",
-                    style: const TextStyle(color: Colors.white)),
-                Text(
-                    "🔐 Password: ${entry['password'] != null ? '*' * entry['password'].length : ''}",
-                    style: const TextStyle(color: Colors.white)),
-                Text("🏷️ Class ID: ${entry['classId']}",
-                    style: const TextStyle(color: Colors.white)),
-                Text("🆔 Token: ${entry['token'] ?? 'N/A'}",
-                    style: const TextStyle(color: Colors.white)),
-                Text("⏰ Time In: ${entry['timeIn']}",
-                    style: const TextStyle(color: Colors.white)),
-                Text(
-                  "🏁 Out Time: ${entry['outTime'] != null && entry['outTime'].isNotEmpty ? entry['outTime'] : 'Not marked yet'}",
-                  style: const TextStyle(color: Colors.white),
+                Column(
+                  children: [
+                    const Text("Weekly", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text("${summary["weekly"]}", style: const TextStyle(color: Colors.white, fontSize: 18)),
+                  ],
+                ),
+                Column(
+                  children: [
+                    const Text("Monthly", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text("${summary["monthly"]}", style: const TextStyle(color: Colors.white, fontSize: 18)),
+                  ],
                 ),
               ],
             ),
           ),
-        );
-      },
+        ),
+
+        // 🔹 Attendance Records List
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: localAttendance.length,
+            itemBuilder: (context, index) {
+              final entry = localAttendance[index];
+              return Card(
+                color: Colors.grey[900],
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.greenAccent),
+                            onPressed: () {
+                              scanAndShowPopup(editIndex: index);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.redAccent),
+                            onPressed: () async {
+                              setState(() {
+                                localAttendance.removeAt(index);
+                                _saveData();
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      Text("👨‍🏫 Teacher: ${entry['teacher']}", style: const TextStyle(color: Colors.white)),
+                      Text("🏷️ Class ID: ${entry['classId']}", style: const TextStyle(color: Colors.white)),
+                      Text("⏰ Time In: ${entry['timeIn']}", style: const TextStyle(color: Colors.white)),
+                      Text(
+                        "🏁 Out Time: ${entry['outTime'] != null && entry['outTime'].isNotEmpty ? entry['outTime'] : 'Not marked yet'}",
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
